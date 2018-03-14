@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Words Everyday</string>
+    <string name="title_activity_add_entry">AddEntry</string>
+</resources>
