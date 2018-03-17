@@ -3,9 +3,11 @@ package com.mdnappz.wordseveryday;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DrawableUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dates = new ArrayList<>();
+        dates = new ArrayList<String>();
         actualEntries = new HashMap<String, String>();
         try {
             FileInputStream fis = openFileInput("entries.json");
@@ -74,17 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button addDate = (Button) findViewById(R.id.addDate);
         startingList = (ListView) findViewById(R.id.startingList);
-        startingArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dates)
-        {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent){
-                View view = super.getView(position, convertView, parent);
-                TextView tv = (TextView) view.findViewById(android.R.id.text1);
-                tv.setTextColor(Color.WHITE);
-                tv.setBackgroundResource(R.drawable.dark_gradient);
-                return view;
-            }
-        };
+        startingArrayAdapter = new CustomAdapter(this, R.layout.row, dates);
 
         if (startingList != null) {
             startingList.setAdapter(startingArrayAdapter);
@@ -112,23 +104,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 dates.add(newDate);
                 actualEntries.put(newDate, "Nothing for now");
-                startingArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, dates)
-                {
-                    @Override
-                    public View getView(int position, View convertView, ViewGroup parent){
-                        View view = super.getView(position, convertView, parent);
-                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
-                        tv.setTextColor(Color.WHITE);
-                        tv.setBackgroundResource(R.drawable.dark_gradient);
-                        return view;
-                    }
-                };
+                startingArrayAdapter = new CustomAdapter(getApplicationContext(), R.layout.row , dates);
 
                 writeJSON(actualEntries, "entries.json");
 
                 if (startingList != null) {
                     startingList.setAdapter(startingArrayAdapter);
-                    int a = 1;
                 }
             }
         });
@@ -157,6 +138,39 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "File Not Found Error", Toast.LENGTH_LONG).show();
         } catch (IOException e){
             Toast.makeText(getApplicationContext(), "Writing Error", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public class CustomAdapter extends ArrayAdapter<String>{
+        public CustomAdapter(Context context, int resId, ArrayList<String> data){
+            super(context, resId, data);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+            View customizedView = convertView;
+
+            if (customizedView == null) {
+                LayoutInflater inflater = getLayoutInflater();
+                customizedView = inflater.inflate(R.layout.row, null);
+            }
+
+            String date = dates.get(position).split(" - ")[0];
+            String title = dates.get(position).toUpperCase();
+
+            TextView titleText = (TextView)customizedView.findViewById(R.id.titleText);
+            TextView dateText = (TextView)customizedView.findViewById(R.id.dateText);
+            if (titleText != null){
+                titleText.setText(title);
+            }
+            if (dateText != null){
+                dateText.setText(date);
+            }
+
+            return customizedView;
+
         }
     }
 }
