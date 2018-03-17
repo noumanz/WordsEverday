@@ -63,24 +63,13 @@ public class MainActivity extends AppCompatActivity {
             fis.close();
         } catch (FileNotFoundException fileError) {
             Toast.makeText(getApplicationContext(), "Creating Error?", Toast.LENGTH_SHORT).show();
-            try {
-                FileOutputStream fos = openFileOutput("entries.json", Context.MODE_PRIVATE);
-            } catch (FileNotFoundException fileError2) {
-                Toast.makeText(getApplicationContext(), "Creating Error... ABORT", Toast.LENGTH_LONG).show();
-            }
+            writeJSON(actualEntries, "entries.json");
         } catch (IOException ioError) {
             Toast.makeText(getApplicationContext(), "IO Error", Toast.LENGTH_SHORT).show();
         } catch (JSONException jsonError) {
             Toast.makeText(getApplicationContext(), "JSON Error", Toast.LENGTH_SHORT).show();
             System.out.println("CRAPPY JSON ERROR");
             System.out.println(jsonError.toString());
-        }
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            String key = extras.getString("thisEntryKey");
-            String entry = extras.getString("thisEntry");
-            actualEntries.put(key, entry);
         }
 
         Button addDate = (Button) findViewById(R.id.addDate);
@@ -104,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         startingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getApplicationContext(), "You Touched " + dates.get(i), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(view.getContext(), AddEntry.class);
                 intent.putExtra("thisEntryKey", dates.get(i));
                 intent.putExtra("actualEntry", actualEntries.get(dates.get(i)));
@@ -124,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 dates.add(newDate);
                 actualEntries.put(newDate, "Nothing for now");
-                startingArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.row, dates)
+                startingArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, dates)
                 {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent){
@@ -136,12 +124,39 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
 
+                writeJSON(actualEntries, "entries.json");
+
                 if (startingList != null) {
                     startingList.setAdapter(startingArrayAdapter);
+                    int a = 1;
                 }
             }
         });
 
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ENTRY_MODIFY && resultCode == 1 && data.hasExtra("thisEntryReturn") && data.hasExtra("thisEntryKeyReturn")){
+            Bundle extras = data.getExtras();
+            String key = extras.getString("thisEntryKeyReturn");
+            String entry = extras.getString("thisEntryReturn");
+            actualEntries.put(key, entry);
+            writeJSON(actualEntries, "entries.json");
+            Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void writeJSON(HashMap toWrite, String fileName){
+        try {
+            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+            JSONObject actualWrite = new JSONObject(toWrite);
+            fos.write(actualWrite.toString().getBytes());
+            fos.close();
+        } catch (FileNotFoundException fileError) {
+            Toast.makeText(getApplicationContext(), "File Not Found Error", Toast.LENGTH_LONG).show();
+        } catch (IOException e){
+            Toast.makeText(getApplicationContext(), "Writing Error", Toast.LENGTH_LONG).show();
+        }
     }
 }

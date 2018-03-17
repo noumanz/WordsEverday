@@ -30,10 +30,11 @@ public class AddEntry extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText entryText = (EditText)findViewById(R.id.editedText);
-                Intent i = new Intent(view.getContext(), MainActivity.class);
-                i.putExtra("thisEntry",entryText.getText().toString());
-                i.putExtra("thisEntryKey", actualKey);
-                startActivityForResult(i, ENTRY_RESULT);
+                Intent rIntent = new Intent();
+                rIntent.putExtra("thisEntryReturn",entryText.getText().toString());
+                rIntent.putExtra("thisEntryKeyReturn", actualKey);
+                setResult(1, rIntent);
+                finish();
             }
         });
     }
