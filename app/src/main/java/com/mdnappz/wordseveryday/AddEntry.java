@@ -20,19 +20,24 @@ public class AddEntry extends AppCompatActivity {
         Button saveButton = (Button)findViewById(R.id.saveButton);
 
         Bundle extras = getIntent().getExtras();
-        final String actualKey = extras.getString("thisEntryKey");
+        String actualTitle = extras.getString("thisEntryKey");
         String actualEntry = extras.getString("actualEntry");
+        final int entryId = extras.getInt("thisEntryID");
 
         EditText entryText = (EditText)findViewById(R.id.editedText);
         entryText.setText(actualEntry);
+        EditText titleText = (EditText)findViewById(R.id.titleText);
+        titleText.setText(actualTitle);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText entryText = (EditText)findViewById(R.id.editedText);
+                EditText titleText = (EditText)findViewById(R.id.titleText);
                 Intent rIntent = new Intent();
-                rIntent.putExtra("thisEntryReturn",entryText.getText().toString());
-                rIntent.putExtra("thisEntryKeyReturn", actualKey);
+                rIntent.putExtra("thisEntryReturn", entryText.getText().toString());
+                rIntent.putExtra("thisEntryKeyReturn", titleText.getText().toString());
+                rIntent.putExtra("thisEntryID", entryId);
                 setResult(1, rIntent);
                 finish();
             }
