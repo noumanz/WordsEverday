@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             }
             fis.close();
         } catch (FileNotFoundException fileError) {
-            Toast.makeText(getApplicationContext(), "Creating Error?", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Creating New Diary", Toast.LENGTH_SHORT).show();
             writeJSON(actualEntries, "entries.json");
         } catch (IOException ioError) {
             Toast.makeText(getApplicationContext(), "IO Error", Toast.LENGTH_SHORT).show();
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             fos.write(actualWrite.toString().getBytes());
             fos.close();
         } catch (FileNotFoundException fileError) {
-            Toast.makeText(getApplicationContext(), "File Not Found Error", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "File Creation Error", Toast.LENGTH_LONG).show();
         } catch (IOException e){
             Toast.makeText(getApplicationContext(), "Writing Error", Toast.LENGTH_LONG).show();
         }
